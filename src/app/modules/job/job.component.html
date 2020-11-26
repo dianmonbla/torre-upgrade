@@ -8,10 +8,10 @@
         <p class="card__name">{{opportunity.objective}}</p>
         <div class="grid-container">
             <div class="grid-child-posts">
-                {{opportunity.compensation.data.periodicity}}
+                {{opportunity.compensation.data?.periodicity}}
             </div>
             <div class="grid-child-followers">
-                {{opportunity.compensation.data.minAmount}} {{opportunity.compensation.data.currency}}
+                {{opportunity.compensation.data?.minAmount}} {{opportunity.compensation.data?.currency}}
             </div>
         </div>
         <ul class="social-icons">

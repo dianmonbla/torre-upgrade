@@ -5,5 +5,5 @@
   display: block;
   margin-top: 20px;
   @include loading();
-  @include cards();
+  @include card();
 }

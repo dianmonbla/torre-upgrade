@@ -57,7 +57,7 @@ export class BioComponent implements OnInit, OnDestroy {
 
   compensation(compensations: { [key: string]: DataModel }): DataModel {
     let compensationKeys: string[] = compensations ? Object.keys(compensations) : null;
-    return compensationKeys ? compensations[compensationKeys[0]] : null;
+    return compensationKeys ? compensations[compensationKeys[0]] : new DataModel();
   }
 
   list(aggregate: string = null, offset: number = OFFSET_OF_PAGE, size: number = SIZE_OF_DOCUMENTS_PER_PAGE): void {
