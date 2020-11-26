@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ScrollingModule } from '@angular/cdk/scrolling'
 
 // Custom modules
 import { JobRoutingModule } from './job-routing.module';
@@ -15,7 +16,8 @@ import { PipesModule } from 'src/app/shared/pipes/pipes.module';
   imports: [
     CommonModule,
     PipesModule,
-    JobRoutingModule
+    JobRoutingModule,
+    ScrollingModule
   ],
   exports: [
     JobComponent

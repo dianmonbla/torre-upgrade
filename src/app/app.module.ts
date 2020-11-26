@@ -9,6 +9,7 @@ import { FooterModule } from './modules/layout/footer/footer.module';
 
 // Custom components
 import { AppComponent } from './app.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { AppComponent } from './app.component';
     HeaderModule,
     FooterModule,
     HttpClientModule,
-    BrowserTransferStateModule
+    BrowserTransferStateModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

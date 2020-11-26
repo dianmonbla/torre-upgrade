@@ -1,13 +1,13 @@
 import { GENERAL_SETTINGS } from "./general-settings";
 
-const TORRE_RESOURCE_API: string = 'https://torre.co/api';
-const TORRE_BIO_RESOURCE_API: string = 'https://torre.bio/api';
-const TORRE_SEARCH_RESOURCE_API: string = 'https://search.torre.co';
+const TORRE_RESOURCE_API: string = 'https://torre-upgrade-api.glitch.me';
+const TORRE_BIO_RESOURCE_API: string = 'https://torre-upgrade-api.glitch.me';
+const TORRE_SEARCH_RESOURCE_API: string = 'https://torre-upgrade-api.glitch.me';
 
 export const environment = {
 	production: true,
 	// Converts GENERAL_SETTINGS constant to step by value
-	...JSON.parse(JSON.stringify(GENERAL_SETTINGS)),
+	...GENERAL_SETTINGS,
 	...{
 		api: {
 			torre: {

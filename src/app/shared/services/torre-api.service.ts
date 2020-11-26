@@ -18,7 +18,7 @@ import { JobModel } from '../models/job.model';
 import { PlatformService } from './platform.service';
 
 export const OFFSET_OF_PAGE: number = 0;
-export const SIZE_OF_DOCUMENTS_PER_PAGE: number = 20;
+export const SIZE_OF_DOCUMENTS_PER_PAGE: number = 12;
 const BIO_STATE_KEY: any = makeStateKey('bio');
 const JOB_STATE_KEY: any = makeStateKey('job');
 const OPPORTUNITIES_STATE_KEY: any = makeStateKey('opportunities');
