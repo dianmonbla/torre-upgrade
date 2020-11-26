@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 // Custom interfaces
-import { MenuOptionInterface } from '../../interfaces/menu-option.interface';
+import { MenuOptionInterface } from '../../../shared/interfaces/menu-option.interface';
 
 @Component({
   selector: 'app-header',

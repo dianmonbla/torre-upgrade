@@ -6,4 +6,15 @@ export class MediumModel extends ModelAbstract<MediumModel>{
     mediaType: string;
     description: string;
     mediaItems: MediaItemModel[];
+
+    setData(data: MediumModel): void {
+        super.setData(data);
+        if (data.mediaItems) {
+            this.mediaItems = data.mediaItems.map((_mediaItem: MediaItemModel) => {
+                let mediaItem: MediaItemModel = new MediaItemModel();
+                mediaItem.setData(_mediaItem);
+                return mediaItem;
+            });
+        }
+    }
 }

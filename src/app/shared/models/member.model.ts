@@ -1,6 +1,6 @@
 import { ModelAbstract } from './model-abstract';
 
-export interface MemberModel extends ModelAbstract<MemberModel>{
+export class MemberModel extends ModelAbstract<MemberModel>{
     subjectId: string;
     name: string;
     username: string;

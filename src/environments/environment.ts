@@ -2,8 +2,12 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+import { GENERAL_SETTINGS } from "./general-settings";
+
 export const environment = {
-  production: false
+	production: false,
+	// Converts GENERAL_SETTINGS constant to step by value
+	...JSON.parse(JSON.stringify(GENERAL_SETTINGS))
 };
 
 /*
@@ -14,3 +18,4 @@ export const environment = {
  * on performance if an error is thrown.
  */
 // import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+

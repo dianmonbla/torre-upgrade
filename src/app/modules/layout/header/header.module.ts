@@ -2,11 +2,11 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-// Custom modules
-import { DirectivesModule } from '../../directives/directives.module';
-
 // Custom components
 import { HeaderComponent } from './header.component';
+
+// Custom directives
+import { DirectivesModule } from '../../../shared/directives/directives.module';
 
 @NgModule({
   declarations: [HeaderComponent],

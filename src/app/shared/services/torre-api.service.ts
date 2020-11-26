@@ -1,143 +1,215 @@
-import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { map, tap, filter, retry } from 'rxjs/operators';
-
-import { SUPERHERO } from '../../../environments/environment';
-import { SuperHeroModel } from '../models/superhero.model';
+import { map, tap, retry } from 'rxjs/operators';
 import { makeStateKey, TransferState } from '@angular/platform-browser';
-import { isPlatformServer, isPlatformBrowser } from '@angular/common';
+import { environment } from 'src/environments/environment';
 
-export const NUMBER_SUPERHEROES_FOR_LIST: number = 20
-const SUPERHEROE_KEY = makeStateKey('superHeroe');
-const SUPERHEROES_KEY = makeStateKey('superHeroes');
-const SUPERHEROES_RANDOM_IDS_KEY = makeStateKey('superHeroesIds');
+// Custom interfaces
+import { SearchResultInterface } from '../interfaces/search-result.interface';
+
+// Custom models
+import { OpportunityModel } from '../models/opportunity.model';
+import { PeopleModel } from '../models/people.model';
+import { BioModel } from '../models/bio.model';
+import { JobModel } from '../models/job.model';
+
+// Custom services
+import { PlatformService } from './platform.service';
+
+export const OFFSET_OF_PAGE: number = 0;
+export const SIZE_OF_DOCUMENTS_PER_PAGE: number = 20;
+const BIO_STATE_KEY: any = makeStateKey('bio');
+const JOB_STATE_KEY: any = makeStateKey('job');
+const OPPORTUNITIES_STATE_KEY: any = makeStateKey('opportunities');
+const PEOPLE_STATE_KEY: any = makeStateKey('people');
 
 @Injectable({ providedIn: 'root' })
 export class TorreAPIService {
-    private _superHeroesIds: number[] = []
-    private _superHero: SuperHeroModel = null
-    private _superHeroes: SuperHeroModel[] = []
-
     constructor(
         private _httpClient: HttpClient,
         private _transferState: TransferState,
-        @Inject(PLATFORM_ID) private _platform: Object
-    ) {
-        this.readTransferState()
+        private _platformService: PlatformService
+    ) { }
+
+    private _reduceQueryParams(aggregate: string = null, offset: number = OFFSET_OF_PAGE, size: number = SIZE_OF_DOCUMENTS_PER_PAGE): string {
+        let queryParams: string[] = [];
+
+        if (aggregate)
+            queryParams.push(`aggregate=${aggregate}`);
+
+        if (offset)
+            queryParams.push(`offset=${offset}`);
+
+        if (size)
+            queryParams.push(`offset=${size}`);
+
+        return queryParams.join('&');
     }
 
-    private readTransferState(): void {
-        if (isPlatformBrowser(this._platform)) {
-            let superHero: SuperHeroModel = new SuperHeroModel()
-            superHero.setData(this._transferState.get<SuperHeroModel>(SUPERHEROE_KEY, null))
-            this._superHero = superHero;
-            this._superHeroes = this._map(this._transferState.get<SuperHeroModel[]>(SUPERHEROES_KEY, []));
-            this._superHeroesIds = this._transferState.get<number[]>(SUPERHEROES_RANDOM_IDS_KEY, [])
-        }
+    private _opportunitiesStateExists(): boolean {
+        return this._transferState.hasKey<OpportunityModel[]>(OPPORTUNITIES_STATE_KEY);
     }
 
-    private existsSuperHeroe(): boolean {
-        return this._superHero && this._superHero.id ? true : false
+    private _setOpportunitiesState(oportunities: OpportunityModel[]): void {
+        this._transferState.set<OpportunityModel[]>(OPPORTUNITIES_STATE_KEY, oportunities);
     }
 
-    private existsSuperHeroes(): boolean {
-        return !!this._superHeroes.length
+    private _getOpportunitiesState(): OpportunityModel[] {
+        return this._transferState.get<OpportunityModel[]>(OPPORTUNITIES_STATE_KEY, []);
     }
 
-    private _map(superHeroes: SuperHeroModel[]): SuperHeroModel[] {
-        return superHeroes.map((_superHero: SuperHeroModel) => {
-            let superHero: SuperHeroModel = new SuperHeroModel()
-            superHero.setData(_superHero)
-            return superHero
-        })
+    private _removeOpportunitiesState(): void {
+        this._transferState.remove<OpportunityModel[]>(OPPORTUNITIES_STATE_KEY);
     }
 
-    /** 
-     * Recomendación de hacer uso de una función recursiva para
-     * optimizar la busqueda y refactorizar el código.
-     */
-    private _filter(filter: string): SuperHeroModel[] {
-        filter = filter.toString().toUpperCase()
-
-        return this._superHeroes.filter((superHero: SuperHeroModel) =>
-            superHero.id.toString().toUpperCase().includes(filter)
-            || superHero.name.toString().toUpperCase().includes(filter)
-            || superHero.biography.fullName.toString().toUpperCase().includes(filter)
-        )
+    private _peopleStateExists(): boolean {
+        return this._transferState.hasKey<PeopleModel[]>(PEOPLE_STATE_KEY);
     }
 
-    private _random(length: number): SuperHeroModel[] {
-        let superHeroes: SuperHeroModel[] = []
-        length = this._superHeroes.length < length ? this._superHeroes.length : length
-
-        if (!this._superHeroesIds.length) {
-            while (superHeroes.length < length) {
-                let randomNumber: number = Math.floor(Math.random() * this._superHeroes.length)
-
-                if (!this._superHeroesIds.includes(randomNumber)) {
-                    this._superHeroesIds.push(randomNumber)
-                    superHeroes.push(this._superHeroes[randomNumber])
-                }
-            }
-
-            if (isPlatformServer(this._platform))
-                this._transferState.set<number[]>(SUPERHEROES_RANDOM_IDS_KEY, this._superHeroesIds)
-        } else
-            this._superHeroesIds.forEach((id: number) => superHeroes.push(this._superHeroes[id]))
-
-        return superHeroes
+    private _setPeopleState(people: PeopleModel[]): void {
+        this._transferState.set<PeopleModel[]>(PEOPLE_STATE_KEY, people);
     }
 
-    list(filter: string = null, random: boolean = true, length: number = NUMBER_SUPERHEROES_FOR_LIST): Observable<SuperHeroModel[]> {
-        if (this.existsSuperHeroes())
-            return of(this._superHeroes).pipe(
-                map((superHeroes: SuperHeroModel[]) => {
-                    superHeroes = filter ? this._filter(filter) : superHeroes
-                    return superHeroes
-                }),
-                map((superHeroes: SuperHeroModel[]) => random ? this._random(length) : superHeroes.slice(0, length))
+    private _getPeopleState(): PeopleModel[] {
+        return this._transferState.get<PeopleModel[]>(PEOPLE_STATE_KEY, []);
+    }
+
+    private _removePeopleState(): void {
+        this._transferState.remove<PeopleModel[]>(PEOPLE_STATE_KEY);
+    }
+
+    private _bioStateExists(): boolean {
+        return this._transferState.hasKey<BioModel>(BIO_STATE_KEY);
+    }
+
+    private _setBioState(bio: BioModel): void {
+        this._transferState.set<BioModel>(BIO_STATE_KEY, bio);
+    }
+
+    private _getBioState(): BioModel {
+        return this._transferState.get<BioModel>(BIO_STATE_KEY, null);
+    }
+
+    private _removeBioState(): void {
+        this._transferState.remove<BioModel>(BIO_STATE_KEY);
+    }
+
+    private _jobStateExists(): boolean {
+        return this._transferState.hasKey<JobModel>(JOB_STATE_KEY);
+    }
+
+    private _setJobState(job: JobModel): void {
+        this._transferState.set<JobModel>(JOB_STATE_KEY, job);
+    }
+
+    private _getJobState(): JobModel {
+        return this._transferState.get<JobModel>(JOB_STATE_KEY, null);
+    }
+
+    private _removeJobState(): void {
+        this._transferState.remove<JobModel>(JOB_STATE_KEY);
+    }
+
+    private _mapOpportunity(_opportunity: OpportunityModel): OpportunityModel {
+        let opportunity: OpportunityModel = new OpportunityModel();
+        opportunity.setData(_opportunity);
+        return opportunity;
+    }
+
+    private _mapOpportunities(opportunities: OpportunityModel[]): OpportunityModel[] {
+        return opportunities.map((opportunity: OpportunityModel) => this._mapOpportunity(opportunity))
+    }
+
+    private _mapPerson(_person: PeopleModel): PeopleModel {
+        let person: PeopleModel = new PeopleModel();
+        person.setData(_person);
+        return person;
+    }
+
+    private _mapPeople(people: PeopleModel[]): PeopleModel[] {
+        return people.map((person: PeopleModel) => this._mapPerson(person))
+    }
+
+    private _mapBio(_bio: BioModel): BioModel {
+        let bio: BioModel = new BioModel();
+        bio.setData(_bio);
+        return bio;
+    }
+
+    private _mapJob(_job: JobModel): JobModel {
+        let job: JobModel = new JobModel();
+        job.setData(_job);
+        return job;
+    }
+
+    public bio(username: string): Observable<BioModel> {
+        if (this._bioStateExists())
+            return of(this._getBioState()).pipe(
+                tap(() => this._removeBioState())
             )
 
-        return this._httpClient.get<SuperHeroModel[]>((<{ [key: string]: string }>SUPERHERO.RESOURCE).LIST)
+        return this._httpClient.get<BioModel>(`${environment.api.torre.resource.bio}/bios/${username}`)
             .pipe(
                 retry(3),
-                map((superHeroes: SuperHeroModel[]) => this._map(superHeroes)),
-                tap((superHeroes: SuperHeroModel[]) => this._superHeroes = superHeroes),
-                tap((superHeroes: SuperHeroModel[]) => {
-                    if (isPlatformServer(this._platform))
-                        this._transferState.set<SuperHeroModel[]>(SUPERHEROES_KEY, superHeroes)
-                }),
-                map((superHeroes: SuperHeroModel[]) => {
-                    superHeroes = filter ? this._filter(filter) : superHeroes
-                    return superHeroes
-                }),
-                map((superHeroes: SuperHeroModel[]) => random ? this._random(length) : superHeroes.slice(0, length))
-            )
-    }
-
-    detail(id: number): Observable<SuperHeroModel> {
-        if (this.existsSuperHeroes())
-            return of(this._superHeroes.find((superHero: SuperHeroModel) => superHero.id == id))
-        else if (this.existsSuperHeroe())
-            return of(this._superHero).pipe(
-                filter((superHero: SuperHeroModel) => this._superHero.id == id)
-            )
-
-        const RESOURCE: string = (<{ [key: string]: string }>SUPERHERO.RESOURCE).ID.replace('#{ID}', id.toString())
-        return this._httpClient.get<SuperHeroModel>(RESOURCE)
-            .pipe(
-                retry(3),
-                map((_superHero: SuperHeroModel) => {
-                    let superHero = new SuperHeroModel()
-                    superHero.setData(_superHero)
-                    return superHero
-                }),
-                tap((superHero: SuperHeroModel) => this._superHero = superHero),
-                tap((superHero: SuperHeroModel) => {
-                    if (isPlatformServer(this._platform))
-                        this._transferState.set<SuperHeroModel>(SUPERHEROE_KEY, superHero)
+                map((bio: BioModel) => this._mapBio(bio)),
+                tap((bio: BioModel) => {
+                    if (this._platformService.isServer())
+                        this._setBioState(bio);
                 })
+            );
+    }
+
+    public job(id: string): Observable<JobModel> {
+        if (this._jobStateExists())
+            return of(this._getJobState()).pipe(
+                tap(() => this._removeJobState())
             )
+
+        return this._httpClient.get<JobModel>(`${environment.api.torre.resource.general}/opportunities/${id}`)
+            .pipe(
+                retry(3),
+                map((job: JobModel) => this._mapJob(job)),
+                tap((job: JobModel) => {
+                    if (this._platformService.isServer())
+                        this._setJobState(job);
+                })
+            );
+    }
+
+    public opportunities(aggregate: string = null, offset?: number, size?: number): Observable<OpportunityModel[]> {
+        if (this._opportunitiesStateExists())
+            return of(this._getOpportunitiesState()).pipe(
+                tap(() => this._removeOpportunitiesState())
+            )
+
+        return this._httpClient.post<SearchResultInterface>(`${environment.api.torre.resource.search}?${this._reduceQueryParams(aggregate, offset, size)}`, null)
+            .pipe(
+                retry(3),
+                map((searchResult: SearchResultInterface) => <OpportunityModel[]>searchResult.results),
+                map((opportunities: OpportunityModel[]) => this._mapOpportunities(opportunities)),
+                tap((opportunities: OpportunityModel[]) => {
+                    if (this._platformService.isServer())
+                        this._setOpportunitiesState(opportunities);
+                })
+            );
+    }
+
+    public people(aggregate: string = null, offset?: number, size?: number): Observable<PeopleModel[]> {
+        if (this._peopleStateExists())
+            return of(this._getPeopleState()).pipe(
+                tap(() => this._removePeopleState())
+            )
+
+        return this._httpClient.post<SearchResultInterface>(`${environment.api.torre.resource.search}?${this._reduceQueryParams(aggregate, offset, size)}`, null)
+            .pipe(
+                retry(3),
+                map((searchResult: SearchResultInterface) => <PeopleModel[]>searchResult.results),
+                map((people: PeopleModel[]) => this._mapPeople(people)),
+                tap((people: PeopleModel[]) => {
+                    if (this._platformService.isServer())
+                        this._setPeopleState(people);
+                })
+            );
     }
 }
