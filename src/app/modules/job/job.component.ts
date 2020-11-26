@@ -3,13 +3,13 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ParamMap, ActivatedRoute } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
+import { environment } from 'src/environments/environment';
 
 // Custom services
 import { OFFSET_OF_PAGE, SIZE_OF_DOCUMENTS_PER_PAGE, TorreAPIService } from 'src/app/shared/services/torre-api.service';
 
 // Custom Models
 import { OpportunityModel } from 'src/app/shared/models/opportunity.model';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-job',

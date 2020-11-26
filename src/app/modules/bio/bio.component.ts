@@ -3,13 +3,14 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ParamMap, ActivatedRoute } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
+import { environment } from 'src/environments/environment';
 
 // Custom services
 import { OFFSET_OF_PAGE, SIZE_OF_DOCUMENTS_PER_PAGE, TorreAPIService } from 'src/app/shared/services/torre-api.service';
 
 // Custom Models
 import { PeopleModel } from 'src/app/shared/models/people.model';
-import { environment } from 'src/environments/environment';
+import { DataModel } from 'src/app/shared/models/data.model';
 
 @Component({
   selector: 'app-bio',
@@ -52,6 +53,11 @@ export class BioComponent implements OnInit, OnDestroy {
         || !!paramMap.get('size')
       )
     ).subscribe((paramMap: ParamMap) => this.list(paramMap.get('aggregate'), Number(paramMap.get('offset')), Number(paramMap.get('size'))))
+  }
+
+  compensation(compensations: { [key: string]: DataModel }): DataModel {
+    let compensationKeys: string[] = compensations ? Object.keys(compensations) : null;
+    return compensationKeys ? compensations[compensationKeys[0]] : null;
   }
 
   list(aggregate: string = null, offset: number = OFFSET_OF_PAGE, size: number = SIZE_OF_DOCUMENTS_PER_PAGE): void {

@@ -10,13 +10,10 @@ import { MenuOptionInterface } from '../../../shared/interfaces/menu-option.inte
 })
 export class HeaderComponent {
   menu: MenuOptionInterface[] = [{
-    name: "Item 1",
-    link: "/item-1"
+    name: "OPPORTUNITIES",
+    link: "/jobs"
   }, {
-    name: "Item 2",
-    link: "/item-2"
-  }, {
-    name: "Item 3",
-    link: "/item-3"
+    name: "PEOPLE",
+    link: "/people"
   }]
 }
