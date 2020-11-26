@@ -1,8 +1,8 @@
 import { GeneralSetiingInterface } from 'src/app/shared/interfaces/general-setting.interface';
 
-const TORRE_RESOURCE_API: string = 'https://torre.co/api';
-const TORRE_BIO_RESOURCE_API: string = 'https://torre.bio/api';
-const TORRE_SEARCH_RESOURCE_API: string = 'https://search.torre.co';
+const TORRE_RESOURCE_API: string = 'http://localhost:3000';
+const TORRE_BIO_RESOURCE_API: string = 'http://localhost:3000';
+const TORRE_SEARCH_RESOURCE_API: string = 'http://localhost:3000';
 
 export const GENERAL_SETTINGS: GeneralSetiingInterface = {
 	configuration: {

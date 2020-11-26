@@ -183,7 +183,7 @@ export class TorreAPIService {
                 tap(() => this._removeOpportunitiesState())
             )
 
-        return this._httpClient.post<SearchResultInterface>(`${environment.api.torre.resource.search}?${this._reduceQueryParams(aggregate, offset, size)}`, null)
+        return this._httpClient.post<SearchResultInterface>(`${environment.api.torre.resource.search}/opportunities/_search?${this._reduceQueryParams(aggregate, offset, size)}`, null)
             .pipe(
                 retry(3),
                 map((searchResult: SearchResultInterface) => <OpportunityModel[]>searchResult.results),
@@ -201,7 +201,7 @@ export class TorreAPIService {
                 tap(() => this._removePeopleState())
             )
 
-        return this._httpClient.post<SearchResultInterface>(`${environment.api.torre.resource.search}?${this._reduceQueryParams(aggregate, offset, size)}`, null)
+        return this._httpClient.post<SearchResultInterface>(`${environment.api.torre.resource.search}/people/_search?${this._reduceQueryParams(aggregate, offset, size)}`, null)
             .pipe(
                 retry(3),
                 map((searchResult: SearchResultInterface) => <PeopleModel[]>searchResult.results),
