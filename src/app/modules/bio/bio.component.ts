@@ -1,69 +1,81 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, BehaviorSubject, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { ParamMap, ActivatedRoute } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 
-// import { SearchService } from '../../shared/services/superhero.service';
-// import { SearchModel } from '../../shared/models/superhero.model';
-// import { SUPERHERO } from '../../../environments/environment';
+// Custom services
+import { OFFSET_OF_PAGE, SIZE_OF_DOCUMENTS_PER_PAGE, TorreAPIService } from 'src/app/shared/services/torre-api.service';
+
+// Custom Models
+import { PeopleModel } from 'src/app/shared/models/people.model';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-bio',
   templateUrl: './bio.component.html',
   styleUrls: ['./bio.component.scss']
 })
-export class BioComponent {
-// export class BioComponent implements OnInit, OnDestroy {
-  // private _activatedRouteQueryParamFilterSubscription$: Subscription
-  // private _superHeroesBehaviorSubject$: BehaviorSubject<SearchModel[]> = new BehaviorSubject(null)
-  // superHeroes$: Observable<SearchModel[]> = this._superHeroesBehaviorSubject$.asObservable()
+export class BioComponent implements OnInit, OnDestroy {
+  private _activatedRouteQueryParamFilterSubscription$: Subscription
+  public biosBehaviorSubject$: BehaviorSubject<PeopleModel[]> = new BehaviorSubject(null)
 
-  // constructor(
-  //   private _superHeroService: SearchService,
-  //   private _title: Title,
-  //   private _meta: Meta,
-  //   private _activatedRoute: ActivatedRoute
-  // ) { }
+  constructor(
+    private _torreAPIService: TorreAPIService,
+    private _title: Title,
+    private _meta: Meta,
+    private _activatedRoute: ActivatedRoute
+  ) { }
 
-  // ngOnInit(): void {
-  //   this.startActivatedRouteQueryParamFilterSubscription()
-  // }
+  ngOnInit(): void {
+    this.startActivatedRouteQueryParamFilterSubscription()
 
-  // ngOnDestroy(): void {
-  //   this._superHeroesBehaviorSubject$.unsubscribe()
-  //   this._activatedRouteQueryParamFilterSubscription$.unsubscribe()
-  // }
+    const queryParams: ParamMap = this._activatedRoute.snapshot.queryParamMap
+    if (!queryParams.get('aggregate')
+      && !queryParams.get('offset')
+      && !queryParams.get('size'))
+      this.list();
+  }
 
-  // private startActivatedRouteQueryParamFilterSubscription(): void {
-  //   this._activatedRouteQueryParamFilterSubscription$ = this._activatedRoute.queryParamMap.pipe(
-  //     map((paramMap: ParamMap) => paramMap.get('filter'))
-  //   ).subscribe((filter: string) => this.list(filter))
-  // }
+  ngOnDestroy(): void {
+    if (this.biosBehaviorSubject$)
+      this.biosBehaviorSubject$.unsubscribe()
 
-  // list(filter: string = null): void {
-  //   const random: boolean = filter ? false : true
-  //   this._superHeroService.list(filter, random)
-  //     .subscribe(
-  //       (superHeroes: SearchModel[]) => {
-  //         this._title.setTitle(`${(<{ [key: string]: string }>SUPERHERO.CONFIGURATION.LIST).TITLE} / ${SUPERHERO.CONFIGURATION.TITLE}`)
+    if (this._activatedRouteQueryParamFilterSubscription$)
+      this._activatedRouteQueryParamFilterSubscription$.unsubscribe()
+  }
 
-  //         this._meta.updateTag({
-  //           name: 'description',
-  //           content: superHeroes.reduce((description: string, superHero: SearchModel) => `${superHero.name}, ${description} `, '')
-  //         })
+  private startActivatedRouteQueryParamFilterSubscription(): void {
+    this._activatedRouteQueryParamFilterSubscription$ = this._activatedRoute.queryParamMap.pipe(
+      filter((paramMap: ParamMap) => !!paramMap.get('aggregate')
+        || !!paramMap.get('offset')
+        || !!paramMap.get('size')
+      )
+    ).subscribe((paramMap: ParamMap) => this.list(paramMap.get('aggregate'), Number(paramMap.get('offset')), Number(paramMap.get('size'))))
+  }
 
-  //         this._meta.updateTag({
-  //           name: 'keywords',
-  //           content: superHeroes.reduce((keywords: string, superHero: SearchModel) => `${superHero.name},${keywords} `, '')
-  //         })
+  list(aggregate: string = null, offset: number = OFFSET_OF_PAGE, size: number = SIZE_OF_DOCUMENTS_PER_PAGE): void {
+    this._torreAPIService.people(aggregate, offset, size)
+      .subscribe(
+        (bios: PeopleModel[]) => {
+          this._title.setTitle(`${environment.configuration.list.people.title} / ${environment.configuration.general.title}`)
 
-  //         this._superHeroesBehaviorSubject$.next(superHeroes)
-  //       }
-  //     )
-  // }
+          this._meta.updateTag({
+            name: 'description',
+            content: bios.reduce((description: string, person: PeopleModel) => `${person.professionalHeadline}, ${description} `, '')
+          })
 
-  // trackByFunction(superHeroModel: SearchModel): number {
-  //   return superHeroModel.id
-  // }
+          this._meta.updateTag({
+            name: 'keywords',
+            content: bios.reduce((keywords: string, person: PeopleModel) => `${person.skills.join(', ')}, ${keywords} `, '')
+          })
+
+          this.biosBehaviorSubject$.next(bios)
+        }
+      )
+  }
+
+  trackByFunction(person: PeopleModel): string {
+    return person.username
+  }
 }
