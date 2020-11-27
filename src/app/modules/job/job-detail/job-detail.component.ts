@@ -38,7 +38,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     this._torreAPIService.job(id)
       .subscribe(
         (opportunity: JobModel) => {
-          this._title.setTitle(`${opportunity.name} / ${environment.configuration.list.jobs.title} / ${environment.configuration.general.title}`)
+          this._title.setTitle(` / ${environment.configuration.list.jobs.title} / ${environment.configuration.general.title}`)
 
           // this._meta.updateTag({
           //   name: 'description',

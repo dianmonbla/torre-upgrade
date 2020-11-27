@@ -6,8 +6,7 @@ const routes: Routes = [{
   path: '',
   loadChildren: () => import('./modules/search/search.module').then(m => m.SearchModule)
 }, {
-  path: '**',
-  loadChildren: () => import('./modules/search/search.module').then(m => m.SearchModule)
+  path: '**', redirectTo: '/jobs'
 }];
 
 @NgModule({

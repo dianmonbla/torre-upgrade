@@ -11,7 +11,7 @@ export const GENERAL_SETTINGS: GeneralSetiingInterface = {
 		},
 		list: {
 			jobs: {
-				title: 'JOBS'
+				title: 'OPPORTUNITIES'
 			},
 			people: {
 				title: 'PEOPLE'

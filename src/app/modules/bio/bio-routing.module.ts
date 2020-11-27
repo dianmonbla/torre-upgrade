@@ -12,7 +12,7 @@ const routes: Routes = [{
     loadChildren: () => import('./bio-detail/bio-detail.module').then(m => m.BioDetailModule)
   },
   {
-    path: '**',
+    path: '',
     loadChildren: () => import('./bio-list/bio-list.module').then(m => m.BioListModule)
   }]
 }];

@@ -14,8 +14,7 @@ const routes: Routes = [{
     path: 'jobs',
     loadChildren: () => import('../job/job.module').then(m => m.JobModule)
   }, {
-    path: '**',
-    loadChildren: () => import('../job/job.module').then(m => m.JobModule)
+    path: '**', redirectTo: '/jobs'
   }]
 }];
 
