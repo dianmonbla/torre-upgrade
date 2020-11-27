@@ -1,62 +1,59 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Params } from '@angular/router';
 import { filter, map } from 'rxjs/operators';
 import { Title, Meta } from '@angular/platform-browser';
+import { environment } from 'src/environments/environment';
 
-// import { SearchModel } from '../../shared/models/superhero.model';
-// import { SuperHeroService } from '../../shared/services/superhero.service';
-// import { SUPERHERO } from '../../../environments/environment';
+// Custom services
+import { TorreAPIService } from 'src/app/shared/services/torre-api.service';
+
+// Custom models
+import { BioModel } from 'src/app/shared/models/bio.model';
+import { ExperienceModel } from 'src/app/shared/models/experience.model';
 
 @Component({
   selector: 'app-bio-detail',
   templateUrl: './bio-detail.component.html',
   styleUrls: ['./bio-detail.component.scss']
 })
-export class BioDetailComponent {
-  // export class BioComponent implements OnInit, OnDestroy {
-  //   private _superHeroBehaviorSubject$: BehaviorSubject<SearchModel> = new BehaviorSubject(null)
-  //   superHero$: Observable<SearchModel> = this._superHeroBehaviorSubject$.asObservable()
+export class BioDetailComponent implements OnInit, OnDestroy {
+  public bioBehaviorSubject$: BehaviorSubject<BioModel> = new BehaviorSubject(null)
 
-  //   constructor(
-  //     private _superHeroService: SearchService,
-  //     private _activatedRoute: ActivatedRoute,
-  //     private _title: Title,
-  //     private _meta: Meta
-  //   ) { }
+  constructor(
+    private _torreAPIService: TorreAPIService,
+    private _activatedRoute: ActivatedRoute,
+    private _title: Title,
+    private _meta: Meta
+  ) { }
 
-  //   ngOnInit(): void {
-  //     this.startSubscribers()
-  //   }
+  ngOnInit(): void {
+    this.detail(this._activatedRoute.snapshot.params.username);
+  }
 
-  //   ngOnDestroy(): void {
-  //     this._superHeroBehaviorSubject$.unsubscribe()
-  //   }
+  ngOnDestroy(): void {
+    if (this.bioBehaviorSubject$)
+      this.bioBehaviorSubject$.unsubscribe()
+  }
 
-  //   private startSubscribers(): void {
-  //     this._activatedRoute.params.pipe(
-  //       filter((params: Params) => params.superheroId),
-  //       map((params: Params) => params.superheroId)
-  //     ).subscribe((id: number) => this.detail(id))
-  //   }
+  detail(username: string): void {
+    this._torreAPIService.bio(username)
+      .subscribe(
+        (bio: BioModel) => {
+          this._title.setTitle(`${bio.person.name} / ${environment.configuration.list.people.title} / ${environment.configuration.general.title}`)
 
-  //   detail(id: number): void {
-  //     this._superHeroService.detail(id)
-  //       .subscribe(
-  //         (superHero: SearchModel) => {
-  //           this._title.setTitle(`${superHero.titleSEO} / ${SUPERHERO.CONFIGURATION.TITLE}`)
-  //           this._meta.updateTag({
-  //             name: 'description',
-  //             content: superHero.descriptionSEO
-  //           })
+          this._meta.updateTag({
+            name: 'description',
+            content: bio.person.professionalHeadline
+          })
 
-  //           this._meta.updateTag({
-  //             name: 'keywords',
-  //             content: superHero.keywordsSEO
-  //           })
+          this._meta.updateTag({
+            name: 'keywords',
+            content: bio.experiences.reduce((keywords: string, experience: ExperienceModel) => `${experience.name}, ${keywords} `, '')
+          })
 
-  //           this._superHeroBehaviorSubject$.next(superHero)
-  //         }
-  //       )
-  //   }
+          this.bioBehaviorSubject$.next(bio)
+        }
+      )
+  }
 }

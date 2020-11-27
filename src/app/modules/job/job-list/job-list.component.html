@@ -19,7 +19,7 @@
         <ul class="social-icons">
             <li *ngFor="let skill of opportunity.skills; last as last">{{skill.name}}{{!last ? ', ': ''}}</li>
         </ul>
-        <a class="btn draw-border" [routerLink]="['/jobs', opportunity.id]" queryParamsHandling="merge"
-            [title]="opportunity.objective">JOB</a>
+        <a class="btn draw-border" [routerLink]="['.', opportunity.id]" queryParamsHandling="merge"
+            [title]="opportunity.objective">OPPORTUNITY</a>
     </div>
 </div>

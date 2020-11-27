@@ -17,7 +17,7 @@
         <ul class="social-icons">
             <li *ngFor="let skill of bio.skills; last as last">{{skill.name}}{{!last ? ', ': ''}}</li>
         </ul>
-        <a class="btn draw-border" [routerLink]="['/bio', bio.username]" queryParamsHandling="merge"
+        <a class="btn draw-border" [routerLink]="['.', bio.username]" queryParamsHandling="merge"
             [title]="bio.professionalHeadline">BIO</a>
     </div>
 </div>

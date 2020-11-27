@@ -1,62 +1,57 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { ActivatedRoute, Params } from '@angular/router';
-import { filter, map } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 
-// import { SearchModel } from '../../shared/models/superhero.model';
-// import { SuperHeroService } from '../../shared/services/superhero.service';
-// import { SUPERHERO } from '../../../environments/environment';
+// Custom services
+import { TorreAPIService } from 'src/app/shared/services/torre-api.service';
+import { environment } from 'src/environments/environment';
+
+// Custom models
+import { JobModel } from 'src/app/shared/models/job.model';
 
 @Component({
   selector: 'app-job-detail',
   templateUrl: './job-detail.component.html',
   styleUrls: ['./job-detail.component.scss']
 })
-export class JobDetailComponent {
-  // export class BioComponent implements OnInit, OnDestroy {
-  //   private _superHeroBehaviorSubject$: BehaviorSubject<SearchModel> = new BehaviorSubject(null)
-  //   superHero$: Observable<SearchModel> = this._superHeroBehaviorSubject$.asObservable()
+export class JobDetailComponent implements OnInit, OnDestroy {
+  public opportunityBehaviorSubject$: BehaviorSubject<JobModel> = new BehaviorSubject(null)
 
-  //   constructor(
-  //     private _superHeroService: SearchService,
-  //     private _activatedRoute: ActivatedRoute,
-  //     private _title: Title,
-  //     private _meta: Meta
-  //   ) { }
+  constructor(
+    private _torreAPIService: TorreAPIService,
+    private _activatedRoute: ActivatedRoute,
+    private _title: Title,
+    private _meta: Meta
+  ) { }
 
-  //   ngOnInit(): void {
-  //     this.startSubscribers()
-  //   }
+  ngOnInit(): void {
+    this.detail(this._activatedRoute.snapshot.params.id);
+  }
 
-  //   ngOnDestroy(): void {
-  //     this._superHeroBehaviorSubject$.unsubscribe()
-  //   }
+  ngOnDestroy(): void {
+    if (this.opportunityBehaviorSubject$)
+      this.opportunityBehaviorSubject$.unsubscribe()
+  }
 
-  //   private startSubscribers(): void {
-  //     this._activatedRoute.params.pipe(
-  //       filter((params: Params) => params.superheroId),
-  //       map((params: Params) => params.superheroId)
-  //     ).subscribe((id: number) => this.detail(id))
-  //   }
+  detail(id: string): void {
+    this._torreAPIService.job(id)
+      .subscribe(
+        (opportunity: JobModel) => {
+          this._title.setTitle(`${opportunity.name} / ${environment.configuration.list.jobs.title} / ${environment.configuration.general.title}`)
 
-  //   detail(id: number): void {
-  //     this._superHeroService.detail(id)
-  //       .subscribe(
-  //         (superHero: SearchModel) => {
-  //           this._title.setTitle(`${superHero.titleSEO} / ${SUPERHERO.CONFIGURATION.TITLE}`)
-  //           this._meta.updateTag({
-  //             name: 'description',
-  //             content: superHero.descriptionSEO
-  //           })
+          // this._meta.updateTag({
+          //   name: 'description',
+          //   content: opportunity.person.professionalHeadline
+          // })
 
-  //           this._meta.updateTag({
-  //             name: 'keywords',
-  //             content: superHero.keywordsSEO
-  //           })
+          // this._meta.updateTag({
+          //   name: 'keywords',
+          //   content: opportunity.experiences.reduce((keywords: string, experience: ExperienceModel) => `${experience.name}, ${keywords} `, '')
+          // })
 
-  //           this._superHeroBehaviorSubject$.next(superHero)
-  //         }
-  //       )
-  //   }
+          this.opportunityBehaviorSubject$.next(opportunity)
+        }
+      )
+  }
 }

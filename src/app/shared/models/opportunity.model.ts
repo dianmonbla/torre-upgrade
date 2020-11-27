@@ -32,13 +32,13 @@ export class OpportunityModel extends ModelAbstract<OpportunityModel>{
     setData(data: OpportunityModel): void {
         super.setData(data);
 
-        if (data.data) {
-            this.data = data.data.map((_datum: DatumModel) => {
-                let datum: DatumModel = new DatumModel();
-                datum.setData(_datum);
-                return datum;
-            });
-        }
+        // if (data.data) {
+        //     this.data = data.data.map((_datum: DatumModel) => {
+        //         let datum: DatumModel = new DatumModel();
+        //         datum.setData(_datum);
+        //         return datum;
+        //     });
+        // }
 
         if (data.organizations) {
             this.organizations = data.organizations.map((_organization: OrganizationModel) => {
