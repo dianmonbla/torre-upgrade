@@ -2,7 +2,7 @@
     <nav>
         <ul class="navbar-nav">
             <li *ngFor="let option of menu">
-                <a [routerLink]="[option.link]" [title]="option.name">{{option.name}}</a>
+                <a [routerLink]="[option.link]" routerLinkActive="active" [title]="option.name">{{option.name}}</a>
             </li>
         </ul>
     </nav>
