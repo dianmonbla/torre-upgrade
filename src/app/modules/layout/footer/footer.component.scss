@@ -1,8 +1,14 @@
 :host {
-  display: block;
-  padding: 34.5px 0px 34.5px 0px !important;
+  width: 100%;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
 
   footer {
+    background-color: #ffffff;
     display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: 10px;
   }
 }

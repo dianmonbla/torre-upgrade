@@ -1,6 +1,7 @@
 @mixin loading($min-height: 100px) {
     .loading {
         display: block;
+        margin-top: 50px;
         text-align: center;
         color: #272133;
         font-size: 24px;
@@ -9,15 +10,11 @@
 }
 
 @mixin card() {
-    @import url("https://fonts.googleapis.com/css2?family=Baloo+Paaji+2:wght@400;500&display=swap");
-
     .container {
         display: grid;
-        grid-template-columns: 300px 300px 300px;
+        grid-template-columns: 30% 30% 30%;
         grid-gap: 50px;
         justify-content: center;
-        background-color: #f5f5f5;
-        font-family: "Baloo Paaji 2", cursive;
         text-align: center;
     }
 

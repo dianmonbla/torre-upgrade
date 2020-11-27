@@ -1,7 +1,12 @@
+// Custom
+@import "../../../themes/variables.scss";
+
 :host {
   display: block;
+  padding-top: 52px;
 
-  app-superhero-filter {
-    margin: 60px 0px 0px 0px;
+  .list {
+    padding: 20px 0px 40px 0px;
+    background-color: $background-color-content;
   }
 }

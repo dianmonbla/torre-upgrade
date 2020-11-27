@@ -1,4 +1,22 @@
+// Custom
+@import "../themes/variables.scss";
+
 :host {
     display: block;
+    position: relative;
     height: 100%;
+
+    app-header {
+        position: fixed;
+        width: 100%;
+        top: 0px;
+        background-color: #ffffff;
+        z-index: 1;
+    }
+
+    main {
+        display: block;
+        height: 100%;
+        background-color: $background-color-content;
+    }
 }
