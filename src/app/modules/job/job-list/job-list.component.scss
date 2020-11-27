@@ -3,7 +3,6 @@
 
 :host {
   display: block;
-  margin-top: 20px;
   @include loading();
-  @include card-detail();
+  @include card();
 }

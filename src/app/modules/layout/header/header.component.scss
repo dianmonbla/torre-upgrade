@@ -1,8 +1,12 @@
+// Custom
+@import '../../../../themes/variables.scss';
+
 :host {
   display: block;
 
   header {
     width: 100%;
+    background-color: $background-color-card;
 
     nav {
       padding: 15px 0px 15px 0px;
@@ -22,7 +26,7 @@
 
           a {
             text-decoration: none;
-            color: #222831;
+            color: #ffffff;
 
             &:hover, &.active {
               text-decoration: underline;

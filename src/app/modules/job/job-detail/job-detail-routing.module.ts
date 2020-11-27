@@ -5,7 +5,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { JobDetailComponent } from './job-detail.component';
 
 const routes: Routes = [{
-  path: ':id',
+  path: '',
   component: JobDetailComponent
 }];
 

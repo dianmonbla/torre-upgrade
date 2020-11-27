@@ -1,8 +1,8 @@
 <ng-template #loading>
-    <div class="loading">Loading superhero...</div>
+    <div class="loading">Loading bio...</div>
 </ng-template>
 
-<ng-template #links let-class="class">
+<!-- <ng-template #links let-class="class">
     <div class="links {{class}}" [hidden]="!(superHero$ | async)">
         <a [routerLink]="['/']" queryParamsHandling="merge" title="IR A LISTADO DE SUPERHÉROES">
             VIEW ALL SUPERHÉROES</a>
@@ -62,4 +62,4 @@
     </div>
 </article>
 <ng-container *ngTemplateOutlet="links; context: {class: 'top'}">
-</ng-container>
+</ng-container> -->

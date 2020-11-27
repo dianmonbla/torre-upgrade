@@ -3,12 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { QuicklinkModule, QuicklinkStrategy } from 'ngx-quicklink';
 
 const routes: Routes = [{
-  path: 'bio',
-  loadChildren: () => import('./modules/bio/bio.module').then(m => m.BioModule),
-}, {
-  path: 'job',
-  loadChildren: () => import('./modules/job/job.module').then(m => m.JobModule),
-}, {
   path: '',
   loadChildren: () => import('./modules/search/search.module').then(m => m.SearchModule)
 }, {

@@ -6,7 +6,14 @@ import { JobComponent } from './job.component';
 
 const routes: Routes = [{
   path: '',
-  component: JobComponent
+  component: JobComponent,
+  children: [{
+    path: ':id',
+    loadChildren: () => import('./job-detail/job-detail.module').then(m => m.JobDetailModule)
+  }, {
+    path: '',
+    loadChildren: () => import('./job-list/job-list.module').then(m => m.JobListModule)
+  }]
 }];
 
 @NgModule({
