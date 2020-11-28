@@ -19,7 +19,7 @@ import { DataModel } from 'src/app/shared/models/data.model';
 })
 export class BioListComponent implements OnInit, OnDestroy {
   private _activatedRouteQueryParamFilterSubscription$: Subscription
-  public biosBehaviorSubject$: BehaviorSubject<PeopleModel[]> = new BehaviorSubject(null)
+  public biosBehaviorSubject$: BehaviorSubject<PeopleModel[]> = new BehaviorSubject(this._torreAPIService.getPeopleState())
 
   constructor(
     private _torreAPIService: TorreAPIService,

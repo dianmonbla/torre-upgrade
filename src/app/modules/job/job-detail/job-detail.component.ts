@@ -16,7 +16,7 @@ import { JobModel } from 'src/app/shared/models/job.model';
   styleUrls: ['./job-detail.component.scss']
 })
 export class JobDetailComponent implements OnInit, OnDestroy {
-  public opportunityBehaviorSubject$: BehaviorSubject<JobModel> = new BehaviorSubject(null)
+  public opportunityBehaviorSubject$: BehaviorSubject<JobModel> = new BehaviorSubject(this._torreAPIService.getJobState())
 
   constructor(
     private _torreAPIService: TorreAPIService,

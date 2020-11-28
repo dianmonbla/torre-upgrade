@@ -18,7 +18,7 @@ import { ExperienceModel } from 'src/app/shared/models/experience.model';
   styleUrls: ['./bio-detail.component.scss']
 })
 export class BioDetailComponent implements OnInit, OnDestroy {
-  public bioBehaviorSubject$: BehaviorSubject<BioModel> = new BehaviorSubject(null)
+  public bioBehaviorSubject$: BehaviorSubject<BioModel> = new BehaviorSubject(this._torreAPIService.getBioState())
 
   constructor(
     private _torreAPIService: TorreAPIService,

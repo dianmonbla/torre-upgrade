@@ -47,7 +47,7 @@ export class TorreAPIService {
         return queryParams.join('&');
     }
 
-    private _opportunitiesStateExists(): boolean {
+    public opportunitiesStateExists(): boolean {
         return this._transferState.hasKey<OpportunityModel[]>(OPPORTUNITIES_STATE_KEY);
     }
 
@@ -55,15 +55,15 @@ export class TorreAPIService {
         this._transferState.set<OpportunityModel[]>(OPPORTUNITIES_STATE_KEY, oportunities);
     }
 
-    private _getOpportunitiesState(): OpportunityModel[] {
-        return this._transferState.get<OpportunityModel[]>(OPPORTUNITIES_STATE_KEY, []);
+    public getOpportunitiesState(): OpportunityModel[] {
+        return this._transferState.get<OpportunityModel[]>(OPPORTUNITIES_STATE_KEY, null);
     }
 
-    private _removeOpportunitiesState(): void {
+    public removeOpportunitiesState(): void {
         this._transferState.remove<OpportunityModel[]>(OPPORTUNITIES_STATE_KEY);
     }
 
-    private _peopleStateExists(): boolean {
+    public peopleStateExists(): boolean {
         return this._transferState.hasKey<PeopleModel[]>(PEOPLE_STATE_KEY);
     }
 
@@ -71,15 +71,15 @@ export class TorreAPIService {
         this._transferState.set<PeopleModel[]>(PEOPLE_STATE_KEY, people);
     }
 
-    private _getPeopleState(): PeopleModel[] {
-        return this._transferState.get<PeopleModel[]>(PEOPLE_STATE_KEY, []);
+    public getPeopleState(): PeopleModel[] {
+        return this._transferState.get<PeopleModel[]>(PEOPLE_STATE_KEY, null);
     }
 
-    private _removePeopleState(): void {
+    public removePeopleState(): void {
         this._transferState.remove<PeopleModel[]>(PEOPLE_STATE_KEY);
     }
 
-    private _bioStateExists(): boolean {
+    public bioStateExists(): boolean {
         return this._transferState.hasKey<BioModel>(BIO_STATE_KEY);
     }
 
@@ -87,15 +87,15 @@ export class TorreAPIService {
         this._transferState.set<BioModel>(BIO_STATE_KEY, bio);
     }
 
-    private _getBioState(): BioModel {
+    public getBioState(): BioModel {
         return this._transferState.get<BioModel>(BIO_STATE_KEY, null);
     }
 
-    private _removeBioState(): void {
+    public removeBioState(): void {
         this._transferState.remove<BioModel>(BIO_STATE_KEY);
     }
 
-    private _jobStateExists(): boolean {
+    public jobStateExists(): boolean {
         return this._transferState.hasKey<JobModel>(JOB_STATE_KEY);
     }
 
@@ -103,11 +103,11 @@ export class TorreAPIService {
         this._transferState.set<JobModel>(JOB_STATE_KEY, job);
     }
 
-    private _getJobState(): JobModel {
+    public getJobState(): JobModel {
         return this._transferState.get<JobModel>(JOB_STATE_KEY, null);
     }
 
-    private _removeJobState(): void {
+    public removeJobState(): void {
         this._transferState.remove<JobModel>(JOB_STATE_KEY);
     }
 
@@ -144,9 +144,9 @@ export class TorreAPIService {
     }
 
     public bio(username: string): Observable<BioModel> {
-        if (this._bioStateExists())
-            return of(this._getBioState()).pipe(
-                tap(() => this._removeBioState())
+        if (this.bioStateExists())
+            return of(this.getBioState()).pipe(
+                tap(() => this.removeBioState())
             )
 
         return this._httpClient.get<BioModel>(`${environment.api.torre.resource.bio}/bios/${username}`)
@@ -161,9 +161,9 @@ export class TorreAPIService {
     }
 
     public job(id: string): Observable<JobModel> {
-        if (this._jobStateExists())
-            return of(this._getJobState()).pipe(
-                tap(() => this._removeJobState())
+        if (this.jobStateExists())
+            return of(this.getJobState()).pipe(
+                tap(() => this.removeJobState())
             )
 
         return this._httpClient.get<JobModel>(`${environment.api.torre.resource.general}/opportunities/${id}`)
@@ -178,9 +178,9 @@ export class TorreAPIService {
     }
 
     public opportunities(aggregate: string = null, offset?: number, size?: number): Observable<OpportunityModel[]> {
-        if (this._opportunitiesStateExists())
-            return of(this._getOpportunitiesState()).pipe(
-                tap(() => this._removeOpportunitiesState())
+        if (this.opportunitiesStateExists())
+            return of(this.getOpportunitiesState()).pipe(
+                tap(() => this.removeOpportunitiesState())
             )
 
         return this._httpClient.post<SearchResultInterface>(`${environment.api.torre.resource.search}/opportunities/_search?${this._reduceQueryParams(aggregate, offset, size)}`, null)
@@ -196,9 +196,9 @@ export class TorreAPIService {
     }
 
     public people(aggregate: string = null, offset?: number, size?: number): Observable<PeopleModel[]> {
-        if (this._peopleStateExists())
-            return of(this._getPeopleState()).pipe(
-                tap(() => this._removePeopleState())
+        if (this.peopleStateExists())
+            return of(this.getPeopleState()).pipe(
+                tap(() => this.removePeopleState())
             )
 
         return this._httpClient.post<SearchResultInterface>(`${environment.api.torre.resource.search}/people/_search?${this._reduceQueryParams(aggregate, offset, size)}`, null)
