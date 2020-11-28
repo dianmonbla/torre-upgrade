@@ -18,7 +18,7 @@ import { OpportunityModel } from 'src/app/shared/models/opportunity.model';
 })
 export class JobListComponent implements OnInit, OnDestroy {
   private _activatedRouteQueryParamFilterSubscription$: Subscription
-  public opportunitiesBehaviorSubject$: BehaviorSubject<OpportunityModel[]> = new BehaviorSubject(null)
+  public opportunitiesBehaviorSubject$: BehaviorSubject<OpportunityModel[]> = new BehaviorSubject(this._torreAPIService.getOpportunitiesState())
 
   constructor(
     private _torreAPIService: TorreAPIService,
