@@ -1,8 +1,22 @@
 // Custom
 @import "../../../../themes/mixins.scss";
+@import "../../../../themes/variables.scss";
 
 :host {
   display: block;
+  height: 100%;
+  text-align: center;
   @include loading();
   @include card();
+
+  cdk-virtual-scroll-viewport {
+    height: calc(100vh - 53px);
+    overflow: auto;
+  }
+
+  cdk-virtual-scroll-viewport.loading {
+    display: block;
+    height: calc(50vh - 53px) !important;
+    overflow: hidden;
+  }
 }

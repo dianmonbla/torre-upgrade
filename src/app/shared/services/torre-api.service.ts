@@ -17,8 +17,13 @@ import { JobModel } from '../models/job.model';
 // Custom services
 import { PlatformService } from './platform.service';
 
-export const OFFSET_OF_PAGE: number = 0;
+export const OFFSET_OF_PAGE_KEY: string = 'offset';
+export const PAGE_NUMBER_KEY: string = 'pageNumber';
+export const NUMBER_OF_PAGE: number = 1;
+export const SIZE_OF_DOCUMENTS_PER_PAGE_KEY: string = 'size';
 export const SIZE_OF_DOCUMENTS_PER_PAGE: number = 9;
+export const AGGREGATE_OF_PAGE_KEY: string = 'aggregate';
+export const DOCUMENTS_PER_ROW_LISTING: number = 3;
 const BIO_STATE_KEY: any = makeStateKey('bio');
 const JOB_STATE_KEY: any = makeStateKey('job');
 const OPPORTUNITIES_STATE_KEY: any = makeStateKey('opportunities');
@@ -32,17 +37,18 @@ export class TorreAPIService {
         private _platformService: PlatformService
     ) { }
 
-    private _reduceQueryParams(aggregate: string = null, offset: number = OFFSET_OF_PAGE, size: number = SIZE_OF_DOCUMENTS_PER_PAGE): string {
+    private _reduceQueryParams(aggregate: string = null, pageNumber: number = NUMBER_OF_PAGE, size: number = SIZE_OF_DOCUMENTS_PER_PAGE): string {
         let queryParams: string[] = [];
 
         if (aggregate)
-            queryParams.push(`aggregate=${aggregate}`);
-
-        if (offset)
-            queryParams.push(`offset=${offset}`);
+            queryParams.push(`${AGGREGATE_OF_PAGE_KEY}=${aggregate}`);
 
         if (size)
-            queryParams.push(`size=${size}`);
+            queryParams.push(`${SIZE_OF_DOCUMENTS_PER_PAGE_KEY}=${size}`);
+
+        pageNumber -= 1;
+        if (pageNumber)
+            queryParams.push(`${OFFSET_OF_PAGE_KEY}=${pageNumber * size}`);
 
         return queryParams.join('&');
     }
@@ -64,19 +70,31 @@ export class TorreAPIService {
     }
 
     public peopleStateExists(): boolean {
-        return this._transferState.hasKey<PeopleModel[]>(PEOPLE_STATE_KEY);
+        return this._transferState.hasKey<SearchResultInterface[]>(PEOPLE_STATE_KEY);
     }
 
-    private _setPeopleState(people: PeopleModel[]): void {
-        this._transferState.set<PeopleModel[]>(PEOPLE_STATE_KEY, people);
+    private _setPeopleState(searchResult: SearchResultInterface): void {
+        this._transferState.set<SearchResultInterface>(PEOPLE_STATE_KEY, searchResult);
     }
 
-    public getPeopleState(): PeopleModel[] {
-        return this._transferState.get<PeopleModel[]>(PEOPLE_STATE_KEY, null);
+    public getPeopleState(): SearchResultInterface {
+        return this._transferState.get<SearchResultInterface>(PEOPLE_STATE_KEY, null);
+    }
+
+    public getPeoplePageNumberState(): number {
+        return this.getPeopleState() ? Number(Math.round(this.getPeopleState().offset / this.getPeopleState().size)) : NUMBER_OF_PAGE;
+    }
+
+    public getPeopleTotalState(): number {
+        return this.getPeopleState() ? Number(this.getPeopleState().total) : 0;
+    }
+
+    public getPeopleSizeState(): number {
+        return this.getPeopleState() ? Number(this.getPeopleState().size) : SIZE_OF_DOCUMENTS_PER_PAGE;
     }
 
     public removePeopleState(): void {
-        this._transferState.remove<PeopleModel[]>(PEOPLE_STATE_KEY);
+        this._transferState.remove<SearchResultInterface>(PEOPLE_STATE_KEY);
     }
 
     public bioStateExists(): boolean {
@@ -195,21 +213,23 @@ export class TorreAPIService {
             );
     }
 
-    public people(aggregate: string = null, offset?: number, size?: number): Observable<PeopleModel[]> {
-        if (this.peopleStateExists())
-            return of(this.getPeopleState()).pipe(
-                tap(() => this.removePeopleState())
-            )
-
-        return this._httpClient.post<SearchResultInterface>(`${environment.api.torre.resource.search}/people/_search?${this._reduceQueryParams(aggregate, offset, size)}`, null)
+    public people(aggregate: string = null, pageNumber?: number, size?: number): Observable<SearchResultInterface> {
+        // if (this.peopleStateExists())
+        //     return of(this.getPeopleState()).pipe(
+        //         tap(() => this.removePeopleState())
+        //     )
+        return this._httpClient.post<SearchResultInterface>(`${environment.api.torre.resource.search}/people/_search?${this._reduceQueryParams(aggregate, pageNumber, size)}`, null)
             .pipe(
                 retry(3),
-                map((searchResult: SearchResultInterface) => <PeopleModel[]>searchResult.results),
-                map((people: PeopleModel[]) => this._mapPeople(people)),
-                tap((people: PeopleModel[]) => {
-                    if (this._platformService.isServer())
-                        this._setPeopleState(people);
+                map((searchResult: SearchResultInterface) => {
+                    searchResult.results = this._mapPeople(<PeopleModel[]>searchResult.results);
+                    return searchResult;
                 })
+                // map((people: PeopleModel[]) => this._mapPeople(people)),
+                // tap((people: PeopleModel[]) => {
+                //     if (this._platformService.isServer())
+                //         this._setPeopleState(people);
+                // })
             );
     }
 }

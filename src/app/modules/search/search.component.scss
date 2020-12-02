@@ -3,10 +3,10 @@
 
 :host {
   display: block;
-  padding-top: 52px;
+  height: 100%;
 
   .list {
-    padding: 20px 0px 40px 0px;
     background-color: $background-color-content;
+    height: 100%;
   }
 }

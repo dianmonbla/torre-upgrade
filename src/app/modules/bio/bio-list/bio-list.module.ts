@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ScrollingModule } from '@angular/cdk/scrolling'
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 // Custom modules
 import { BioListRoutingModule } from './bio-list-routing.module';
@@ -17,7 +18,8 @@ import { PipesModule } from 'src/app/shared/pipes/pipes.module';
     CommonModule,
     PipesModule,
     BioListRoutingModule,
-    ScrollingModule
+    ScrollingModule,
+    MatProgressSpinnerModule
   ],
   exports: [
     BioListComponent

@@ -3,6 +3,12 @@
 
 :host {
   display: block;
+  height: 100%;
   @include loading();
   @include card();
+
+  cdk-virtual-scroll-viewport {
+    display: block;
+    height: 100%;
+  }
 }

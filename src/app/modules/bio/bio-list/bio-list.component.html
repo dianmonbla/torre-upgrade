@@ -1,23 +1,26 @@
-<ng-template #loading>
-    <div class="loading">Loading people...</div>
-</ng-template>
-
-<div class="container" *ngIf="(biosBehaviorSubject$ | async) as bios; else loading">
-    <div class="card" *ngFor="let bio of bios; index as index; trackBy: trackByFunction;">
-        <img [src]="bio.picture" [alt]="bio.name" class="card__image">
-        <p class="card__name">{{bio.name}}</p>
-        <div class="grid-container">
-            <div class="grid-child-posts">
-                {{compensation(bio.compensation)?.periodicity}}
+<cdk-virtual-scroll-viewport [itemSize]="700" *ngIf="(biosBehaviorSubject$ | async) as bios"
+    [class.loading]="(isLoadingBehaviorSubject$ | async)">
+    <div class="container" *cdkVirtualFor="let biosRow of biosBehaviorSubject$; let indexRow = index;">
+        <div class="card" *ngFor="let bio of biosRow; let indexRow = index;">
+            <img [src]="bio.picture" [alt]="bio.name" class="card__image">
+            <p class="card__name">{{bio.name}}</p>
+            <div class="grid-container">
+                <div class="grid-child-posts">
+                    {{compensationBio(bio.compensation)?.periodicity}}
+                </div>
+                <div class="grid-child-followers">
+                    {{compensationBio(bio.compensation)?.amount}} {{compensationBio(bio.compensation)?.currency}}
+                </div>
             </div>
-            <div class="grid-child-followers">
-                {{compensation(bio.compensation)?.amount}} {{compensation(bio.compensation)?.currency}}
-            </div>
+            <ul class="social-icons">
+                <li *ngFor="let skill of bio.skills; last as last">{{skill.name}}{{!last ? ', ': ''}}</li>
+            </ul>
+            <a class="btn draw-border" [routerLink]="['.', bio.username]" queryParamsHandling="merge"
+                [title]="bio.professionalHeadline">BIO</a>
         </div>
-        <ul class="social-icons">
-            <li *ngFor="let skill of bio.skills; last as last">{{skill.name}}{{!last ? ', ': ''}}</li>
-        </ul>
-        <a class="btn draw-border" [routerLink]="['.', bio.username]" queryParamsHandling="merge"
-            [title]="bio.professionalHeadline">BIO</a>
     </div>
+</cdk-virtual-scroll-viewport>
+
+<div class="loading" *ngIf="(isLoadingBehaviorSubject$ | async)">
+    <mat-spinner></mat-spinner>
 </div>

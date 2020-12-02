@@ -6,7 +6,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
 
 // Custom services
-import { OFFSET_OF_PAGE, SIZE_OF_DOCUMENTS_PER_PAGE, TorreAPIService } from 'src/app/shared/services/torre-api.service';
+import { NUMBER_OF_PAGE, SIZE_OF_DOCUMENTS_PER_PAGE, TorreAPIService } from 'src/app/shared/services/torre-api.service';
 
 // Custom Models
 import { OpportunityModel } from 'src/app/shared/models/opportunity.model';
@@ -54,7 +54,7 @@ export class JobListComponent implements OnInit, OnDestroy {
     ).subscribe((paramMap: ParamMap) => this.list(paramMap.get('aggregate'), Number(paramMap.get('offset')), Number(paramMap.get('size'))))
   }
 
-  list(aggregate: string = null, offset: number = OFFSET_OF_PAGE, size: number = SIZE_OF_DOCUMENTS_PER_PAGE): void {
+  list(aggregate: string = null, offset: number = NUMBER_OF_PAGE, size: number = SIZE_OF_DOCUMENTS_PER_PAGE): void {
     this._torreAPIService.opportunities(aggregate, offset, size)
       .subscribe(
         (opportunities: OpportunityModel[]) => {
