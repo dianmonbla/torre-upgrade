@@ -1,5 +1,4 @@
-<cdk-virtual-scroll-viewport [itemSize]="700" *ngIf="(biosBehaviorSubject$ | async) as bios"
-    [class.loading]="(isLoadingBehaviorSubject$ | async)">
+<cdk-virtual-scroll-viewport [itemSize]="700" *ngIf="(biosBehaviorSubject$ | async) as bios">
     <div class="container" *cdkVirtualFor="let biosRow of biosBehaviorSubject$; let indexRow = index;">
         <div class="card" *ngFor="let bio of biosRow; let indexRow = index;">
             <img [src]="bio.picture" [alt]="bio.name" class="card__image">
@@ -20,7 +19,4 @@
         </div>
     </div>
 </cdk-virtual-scroll-viewport>
-
-<div class="loading" *ngIf="(isLoadingBehaviorSubject$ | async)">
-    <mat-spinner></mat-spinner>
-</div>
+<mat-spinner class="list" *ngIf="(isLoadingBehaviorSubject$ | async)"></mat-spinner>

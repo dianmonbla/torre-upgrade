@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild, AfterViewChecked, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, AfterViewChecked, NgZone } from '@angular/core';
 import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { filter, first, map, pairwise, tap, throttleTime } from 'rxjs/operators';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -20,7 +20,6 @@ import { SearchResultInterface } from 'src/app/shared/interfaces/search-result.i
   selector: 'app-bio-list',
   templateUrl: './bio-list.component.html',
   styleUrls: ['./bio-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   queries: {
     cdkVirtualScrollViewport: new ViewChild(CdkScrollable)
   }
@@ -59,6 +58,7 @@ export class BioListComponent implements OnInit, AfterViewChecked, OnDestroy {
     private _meta: Meta,
     private _activatedRoute: ActivatedRoute,
     private _router: Router,
+    private _ngZone: NgZone
   ) { }
 
   ngOnInit(): void {
@@ -119,12 +119,13 @@ export class BioListComponent implements OnInit, AfterViewChecked, OnDestroy {
       map(() => this._pageNumber + 1),
       filter((newPageNumber: number) => newPageNumber <= this.totalPages),
       tap((newPageNumber: number) => this._pageNumber = newPageNumber),
+      tap(() => this.isLoadingBehaviorSubject$.next(true)),
     ).subscribe((newPageNumber: number) => {
-      this.isLoadingBehaviorSubject$.next(true);
-
       let queryParams: { [key: string]: number } = {};
       queryParams[PAGE_NUMBER_KEY] = newPageNumber;
-      this.addAggregateToRouteQueryParams(<Params>queryParams);
+      this._ngZone.run(() => {
+        this.addAggregateToRouteQueryParams(<Params>queryParams);
+      });
     });
   }
 

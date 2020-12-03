@@ -2,9 +2,14 @@
 @import "./variables.scss";
 
 @mixin loading() {
-    .loading {
-        display: inline-block;
-        text-align: center;
+    mat-spinner {
+        &.list {
+            width: 100px;
+            position: absolute;
+            height: 100px;
+            bottom: 10%;
+            left: calc(50% - 50px);
+        }
     }
 }
 
